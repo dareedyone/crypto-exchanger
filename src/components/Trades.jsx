@@ -4,7 +4,7 @@ import { decorateFilledOrders } from "../helpers";
 import Spinner from "./Spinner";
 
 const Trades = () => {
-	// redundant or unnecessary
+	// redundant or unnecessary.
 	const filledOrdersLoaded = useSelector(
 		(state) => state?.exchange?.filledOrders?.loaded
 	);
