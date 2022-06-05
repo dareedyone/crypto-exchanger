@@ -7,6 +7,27 @@ import {
 	CANCELLED_ORDERS_LOADED,
 	FILLED_ORDERS_LOADED,
 	ALL_ORDERS_LOADED,
+	ORDER_CANCELLING,
+	ORDER_CANCELLED,
+	ORDER_FILLING,
+	ORDER_FILLED,
+	EXCHANGE_ETHER_BALANCE_LOADED,
+	EXCHANGE_TOKEN_BALANCE_LOADED,
+	BALANCES_LOADING,
+	BALANCES_LOADED,
+	ETHER_DEPOSIT_AMOUNT_CHANGED,
+	ETHER_WITHDRAW_AMOUNT_CHANGED,
+	TOKEN_DEPOSIT_AMOUNT_CHANGED,
+	TOKEN_WITHDRAW_AMOUNT_CHANGED,
+	ETHER_BALANCE_LOADED,
+	BUY_ORDER_AMOUNT_CHANGED,
+	BUY_ORDER_PRICE_CHANGED,
+	BUY_ORDER_MAKING,
+	SELL_ORDER_AMOUNT_CHANGED,
+	SELL_ORDER_PRICE_CHANGED,
+	SELL_ORDER_MAKING,
+	ORDER_MADE,
+	TOKEN_BALANCE_LOADED,
 } from "./types";
 
 const web3 = (state = {}, action) => {
@@ -15,6 +36,8 @@ const web3 = (state = {}, action) => {
 			return { ...state, connection: action.connection };
 		case WEB3_ACCOUNT_LOADED:
 			return { ...state, account: action.account };
+		case ETHER_BALANCE_LOADED:
+			return { ...state, balance: action.balance };
 		default:
 			return state;
 	}
@@ -24,6 +47,8 @@ const token = (state = {}, action) => {
 	switch (action.type) {
 		case TOKEN_LOADED:
 			return { ...state, loaded: true, contract: action.contract };
+		case TOKEN_BALANCE_LOADED:
+			return { ...state, balance: action.balance };
 		default:
 			return state;
 	}
@@ -47,6 +72,127 @@ const exchange = (state = {}, action) => {
 			return {
 				...state,
 				allOrders: { loaded: true, data: action.allOrders },
+			};
+		case ORDER_CANCELLING:
+			return {
+				...state,
+				orderCancelling: true,
+			};
+		case ORDER_FILLING:
+			return {
+				...state,
+				orderFilling: true,
+			};
+		case ORDER_CANCELLED:
+			return {
+				...state,
+				orderCancelling: false,
+				cancelledOrders: {
+					...state.cancelledOrders,
+					data: [...state.cancelledOrders.data, action.order],
+				},
+			};
+		case ORDER_FILLED:
+			// prevent duplicate data
+			let index = state.filledOrders.data.findIndex(
+				(order) => order.id === action.order.id
+			);
+			let data;
+			if (index === -1) {
+				data = [...state.filledOrders.data, action.order];
+			} else {
+				data = state.filledOrders.data;
+			}
+			return {
+				...state,
+				orderFilling: false,
+				filledOrders: {
+					...state.filledOrders,
+					data,
+				},
+			};
+		case EXCHANGE_ETHER_BALANCE_LOADED:
+			return { ...state, etherBalance: action.balance };
+		case EXCHANGE_TOKEN_BALANCE_LOADED:
+			return { ...state, tokenBalance: action.balance };
+		case BALANCES_LOADING:
+			return { ...state, balancesLoading: true };
+		case BALANCES_LOADED:
+			return { ...state, balancesLoading: false };
+		case ETHER_DEPOSIT_AMOUNT_CHANGED:
+			return { ...state, etherDepositAmount: action.amount };
+		case ETHER_WITHDRAW_AMOUNT_CHANGED:
+			return { ...state, etherWithdrawAmount: action.amount };
+		case TOKEN_DEPOSIT_AMOUNT_CHANGED:
+			return { ...state, tokenDepositAmount: action.amount };
+		case TOKEN_WITHDRAW_AMOUNT_CHANGED:
+			return { ...state, tokenWithdrawAmount: action.amount };
+
+		case BUY_ORDER_AMOUNT_CHANGED:
+			return {
+				...state,
+				buyOrder: { ...state.buyOrder, amount: action.amount },
+			};
+		case BUY_ORDER_PRICE_CHANGED:
+			return { ...state, buyOrder: { ...state.buyOrder, price: action.price } };
+		case BUY_ORDER_MAKING:
+			return {
+				...state,
+				buyOrder: {
+					...state.buyOrder,
+					amount: null,
+					price: null,
+					making: true,
+				},
+			};
+
+		case ORDER_MADE:
+			// Prevent duplicate orders
+			index = state.allOrders.data.findIndex(
+				(order) => order.id === action.order.id
+			);
+
+			if (index === -1) {
+				data = [...state.allOrders.data, action.order];
+			} else {
+				data = state.allOrders.data;
+			}
+
+			return {
+				...state,
+				allOrders: {
+					...state.allOrders,
+					data,
+				},
+				buyOrder: {
+					...state.buyOrder,
+					making: false,
+				},
+				sellOrder: {
+					...state.sellOrder,
+					making: false,
+				},
+			};
+
+		case SELL_ORDER_AMOUNT_CHANGED:
+			return {
+				...state,
+				sellOrder: { ...state.sellOrder, amount: action.amount },
+			};
+		case SELL_ORDER_PRICE_CHANGED:
+			return {
+				...state,
+				sellOrder: { ...state.sellOrder, price: action.price },
+			};
+		case SELL_ORDER_MAKING:
+			return {
+				...state,
+				sellOrder: {
+					...state.sellOrder,
+					amount: null,
+					price: null,
+					making: true,
+				},
 			};
 		default:
 			return state;

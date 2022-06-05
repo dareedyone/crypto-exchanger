@@ -13,39 +13,6 @@ const Trades = () => {
 		decorateFilledOrders(state?.exchange?.filledOrders?.data)
 	);
 
-	// Later usage in other components
-	const cancelledOrdersLoaded = useSelector(
-		(state) => state?.exchange?.cancelledOrders?.loaded
-	);
-	const cancelledOrders = useSelector(
-		(state) => state?.exchange?.cancelledOrders?.data
-	);
-
-	const allOrdersLoaded = useSelector(
-		(state) => state?.exchange?.allOrders?.loaded
-	);
-	const allOrders = useSelector((state) => state?.exchange?.allOrders?.data);
-	const ordersBookLoaded = useSelector(
-		({ exchange }) =>
-			exchange?.allOrders?.loaded &&
-			exchange?.filledOrders?.loaded &&
-			exchange?.cancelledOrders?.loaded
-	);
-	const openOrders = useSelector(({ exchange }) => {
-		const all = exchange?.allOrders || [];
-		const filled = exchange?.filledOrders || [];
-		const cancelled = exchange?.cancelledOrders || [];
-
-		const open = all.filter((order) => {
-			if (filled.some((filledOrder) => order.id === filledOrder.id))
-				return false;
-			if (cancelled.some((cancelledOrder) => order.id === cancelledOrder.id))
-				return false;
-			return true;
-		});
-
-		return open;
-	});
 	const showFilledOrders = () => (
 		<tbody>
 			{filledOrders.map((order) => (

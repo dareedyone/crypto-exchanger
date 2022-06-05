@@ -29,6 +29,7 @@ module.exports = async function (callback) {
 		// Give tokens to account[1]
 		const sender = accounts[0];
 		const receiver = accounts[1];
+		// console.log("accounts", accounts);
 
 		let amount = web3.utils.toWei("10000", "ether"); // 10,000 tokens
 
@@ -70,7 +71,9 @@ module.exports = async function (callback) {
 		console.log(`Made order from ${user1}`);
 
 		// User 1 cancels order
+		console.log("logssss", result);
 		orderId = result.logs[0].args.id;
+
 		await exchange.cancelOrder(orderId, { from: user1 });
 		console.log(`Cancelled order from ${user1}`);
 
@@ -140,7 +143,7 @@ module.exports = async function (callback) {
 		for (let i = 1; i <= 10; i++) {
 			result = await exchange.makeOrder(
 				token.address,
-				tokens(10 * 1),
+				tokens(10 * i),
 				ETHER_ADDRESS,
 				ether(0.01),
 				{ from: user1 }
@@ -156,7 +159,7 @@ module.exports = async function (callback) {
 				ETHER_ADDRESS,
 				ether(0.01),
 				token.address,
-				tokens(10 * 1),
+				tokens(10 * i),
 				{ from: user2 }
 			);
 			console.log(`Made order from ${user1}`);
@@ -166,6 +169,6 @@ module.exports = async function (callback) {
 	} catch (error) {
 		console.log(error);
 	}
-
+	// must be called at the end
 	callback();
 };

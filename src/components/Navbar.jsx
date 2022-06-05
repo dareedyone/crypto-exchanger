@@ -3,7 +3,7 @@ import React from "react";
 const Navbar = ({ account }) => (
 	<nav className="navbar navbar-expand-lg navbar-dark bg-primary">
 		<a className="navbar-brand" href="/#">
-			Token Exchange [Dapp]
+			Token Exchange [STaR Dapp]
 		</a>
 		<button
 			className="navbar-toggler"

@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "./Navbar";
 import Content from "./Content";
+import { accountSelector } from "../store/selectors";
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -25,12 +26,13 @@ const App = () => {
 				// console.log("totalSupply", totalSupply);
 				console.log("the network", network);
 			} catch (error) {
-				window.alert(error.message);
+				// window.alert(error.message);
+				console.log("the error message", error);
 			}
 		})();
 	}, [dispatch]);
 
-	const account = useSelector((state) => state?.web3?.account);
+	const account = useSelector(accountSelector);
 	const areContractsLoaded = useSelector(
 		(state) => state?.token?.loaded && state?.exchange?.loaded
 	);
